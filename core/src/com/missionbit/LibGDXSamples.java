@@ -20,7 +20,7 @@ public class LibGDXSamples extends Game {
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 		batch = new SpriteBatch();
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         this.setScreen(new MainMenu(this));
 	}
 

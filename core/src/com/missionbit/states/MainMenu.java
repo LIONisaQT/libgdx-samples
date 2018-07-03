@@ -10,7 +10,7 @@ public class MainMenu extends State {
     }
 
     @Override
-    void update() {
+    void update(float dt) {
         if (Gdx.input.justTouched()) {
             game.setScreen(new InGame(game));
             dispose();

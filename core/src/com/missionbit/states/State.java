@@ -6,7 +6,7 @@ import com.missionbit.LibGDXSamples;
 
 public abstract class State implements Screen {
     final LibGDXSamples game;
-    OrthographicCamera camera;
+    public OrthographicCamera camera;
 
     State(LibGDXSamples game) {
         this.game = game;
@@ -23,11 +23,11 @@ public abstract class State implements Screen {
     public void render(float delta) {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        update();
+        update(delta);
         drawGame();
     }
 
-    abstract void update();
+    abstract void update(float dt);
 
     abstract void drawGame();
 
