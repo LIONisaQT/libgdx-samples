@@ -3,6 +3,9 @@ package com.missionbit.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,6 +20,7 @@ public class Player extends Actor {
     private Vector3 tap;                    // Holds tap position
     private static final int GRAVITY = -15; // Gravity constant
     private final InGame game;              // Reference to the in-game state
+    private Rectangle collisionBox;
 
     public Player(int x, int y, InGame game) {
         setDebug(true);
@@ -29,16 +33,30 @@ public class Player extends Actor {
         setBounds(x, y, texture.getWidth() / 3, texture.getHeight() / 3);
         faceRight = true;
         tap = new Vector3();
+        collisionBox = new Rectangle();
+    }
+
+    public boolean checkCollision() {
+        for (RectangleMapObject rect : InGame.mapObjects.getByType(RectangleMapObject.class)) {
+            if (Intersector.overlaps(rect.getRectangle(), collisionBox)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void update(float dt) {
         if (Gdx.input.isTouched()) {
             if (getTapPosition().x > getX() + anim.getFrame().getRegionWidth() / 2) {
-                if (!faceRight) { needFlip = true; } // Check if we need to flip the animation
+                if (!faceRight) {
+                    needFlip = true;
+                } // Check if we need to flip the animation
                 faceRight = true;
                 velocity.set(moveSpeed, velocity.y);
             } else {
-                if (faceRight) { needFlip = true; } // Check if we need to flip the animation
+                if (faceRight) {
+                    needFlip = true;
+                } // Check if we need to flip the animation
                 faceRight = false;
                 velocity.set(-moveSpeed, velocity.y);
             }
@@ -54,10 +72,15 @@ public class Player extends Actor {
             velocity.set(0, velocity.y);
             anim.setFrame(0);
         }
-//        velocity.add(0, GRAVITY);
-        velocity.scl(dt);
-        moveBy(velocity.x, velocity.y);
-        velocity.scl(1 / dt);
+        collisionBox.set(getX(), getY(), getWidth(), getHeight());
+        if (!checkCollision()) {
+            velocity.add(0, GRAVITY);
+        } else {
+            velocity.y = 0;
+        }
+            velocity.scl(dt);
+            moveBy(velocity.x, velocity.y);
+            velocity.scl(1 / dt);
     }
 
     /*
