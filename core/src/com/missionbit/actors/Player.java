@@ -14,6 +14,7 @@ import com.missionbit.states.InGame;
 public class Player extends Actor {
     private Texture texture;
     private Vector2 velocity;
+    private float moveSpeed;
     private Animation anim;
     private boolean faceRight, needFlip;
     private Vector3 tap;                    // Holds tap position
@@ -24,8 +25,8 @@ public class Player extends Actor {
     public Player(int x, int y, InGame game) {
         setDebug(true);
         this.game = game;
-        setScale(5);
-        texture = new Texture("run_cycle.png");
+        texture = new Texture("texture-regions/run_cycle.png");
+        moveSpeed = 150;
         anim = new Animation(new TextureRegion(texture), 8, 1f, 3, 3);
         velocity = new Vector2(0, 0);
         setPosition(x, y);
@@ -51,13 +52,13 @@ public class Player extends Actor {
                     needFlip = true;
                 } // Check if we need to flip the animation
                 faceRight = true;
-                velocity.set(100, velocity.y);
+                velocity.set(moveSpeed, velocity.y);
             } else {
                 if (faceRight) {
                     needFlip = true;
                 } // Check if we need to flip the animation
                 faceRight = false;
-                velocity.set(-100, velocity.y);
+                velocity.set(-moveSpeed, velocity.y);
             }
 
             // Flips animation frames once if we need to
