@@ -54,7 +54,7 @@ public class Player extends Actor {
             velocity.set(0, velocity.y);
             anim.setFrame(0);
         }
-//        velocity.add(0, GRAVITY);
+        velocity.add(0, GRAVITY);
         velocity.scl(dt);
         moveBy(velocity.x, velocity.y);
         velocity.scl(1 / dt);
