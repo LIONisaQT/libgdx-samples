@@ -14,7 +14,6 @@ public class Player extends Actor {
     private float moveSpeed;
     private Animation anim;
     private boolean faceRight, needFlip;
-    private Vector3 tap;                    // Holds tap position
     private static final int GRAVITY = -15; // Gravity constant
     private final InGame game;              // Reference to the in-game state
 
@@ -28,12 +27,17 @@ public class Player extends Actor {
         setPosition(x, y);
         setBounds(x, y, texture.getWidth() / 3, texture.getHeight() / 3);
         faceRight = true;
-        tap = new Vector3();
     }
 
     public void update(float dt) {
         if (Gdx.input.isTouched()) {
-            if (getTapPosition().x > getX() + anim.getFrame().getRegionWidth() / 2) {
+            // Transforms screen coordinates to game world coordinates
+            Vector3 touchPos = new Vector3();
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            game.camera.unproject(touchPos);
+
+            // Make player move towards tap position
+            if (touchPos.x > getX() + anim.getFrame().getRegionWidth() / 2) {
                 if (!faceRight) { needFlip = true; } // Check if we need to flip the animation
                 faceRight = true;
                 velocity.set(moveSpeed, velocity.y);
@@ -58,17 +62,6 @@ public class Player extends Actor {
         velocity.scl(dt);
         moveBy(velocity.x, velocity.y);
         velocity.scl(1 / dt);
-    }
-
-    /*
-    By default, LibGDX's camera origin is top-left. When textures are drawn, the origin is the
-    bottom-left, because textures are drawn in world space. To fix this, we simply get the positions
-    of the tap according to LibGDX's camera, and then use unproject() to translate the point in
-    screen coordinates to world space.
-     */
-    private Vector3 getTapPosition() {
-        tap.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        return game.camera.unproject(tap);
     }
 
     public TextureRegion getTexture() {
