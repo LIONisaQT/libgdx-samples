@@ -10,10 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.missionbit.states.MainMenu;
 
 public class LibGDXSamples extends Game {
-    public BitmapFont font;
 	public static final int WIDTH = 480;
 	public static final int HEIGHT = 800;
 	public static final String TITLE = "LibGDX Sample";
+
+    public BitmapFont font;
 	public SpriteBatch batch;
 	private Music music;
 	
@@ -23,10 +24,12 @@ public class LibGDXSamples extends Game {
         font.setColor(Color.WHITE);
 		batch = new SpriteBatch();
         Gdx.gl.glClearColor(0.75f, 0.75f, 0.75f, 1);
+
         music = Gdx.audio.newMusic(Gdx.files.internal("music/bgm1.mp3"));
         music.setLooping(true);
         music.setVolume(1f);
         music.play();
+
         this.setScreen(new MainMenu(this));
 	}
 
