@@ -2,16 +2,19 @@ package com.missionbit.states;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.missionbit.LibGDXSamples;
 
 public abstract class State implements Screen {
     final LibGDXSamples game;
     public OrthographicCamera camera;
+    public static final float PIXEL_TO_METER = 1/32f;
 
     State(LibGDXSamples game) {
         this.game = game;
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, LibGDXSamples.WIDTH, LibGDXSamples.HEIGHT);
+        camera = new OrthographicCamera(LibGDXSamples.WIDTH * PIXEL_TO_METER, LibGDXSamples.HEIGHT * PIXEL_TO_METER);
+        camera.translate(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.update();
     }
 
     @Override
@@ -21,10 +24,11 @@ public abstract class State implements Screen {
 
     @Override
     public void render(float delta) {
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
         update(delta);
         drawGame();
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
+
     }
 
     abstract void update(float dt);
@@ -33,7 +37,6 @@ public abstract class State implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
     }
 
     @Override
