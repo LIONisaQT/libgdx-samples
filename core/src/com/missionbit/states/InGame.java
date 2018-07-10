@@ -21,7 +21,7 @@ public class InGame extends State {
     InGame(LibGDXSamples game) {
         super(game);
         player = new Player(50, 100, this);
-        controller = new Controller();
+        controller = new Controller(camera);
 
         // Initialize effects array and an instance of the particle effect
         effects = new Array<ParticleEffectPool.PooledEffect>();
@@ -81,7 +81,7 @@ public class InGame extends State {
 
     // Anything involving input and the controller goes here
     private void handleInput() {
-        controller.update(camera);
+        controller.update();
 
         if (controller.isLeftPressed()) {
             player.moveLeft();
