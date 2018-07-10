@@ -8,20 +8,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.missionbit.LibGDXSamples;
 
 public abstract class State implements Screen {
+
     final LibGDXSamples game;
-    final boolean DEBUG = false;
-    public OrthographicCamera camera;
+    final boolean DEBUG = true;
+    OrthographicCamera camera;
 
     BitmapFont font;
     SpriteBatch batch;
     ShapeRenderer sr;
     Music music;
 
-    private Vector3 tap;
 
     State(LibGDXSamples game) {
         this.game = game;
@@ -37,13 +36,6 @@ public abstract class State implements Screen {
         music = Gdx.audio.newMusic(Gdx.files.internal("music/bgm1.mp3"));
         music.setLooping(true);
         music.setVolume(1f);
-
-        tap = new Vector3();
-    }
-
-    @Override
-    public void show() {
-
     }
 
     @Override
@@ -58,14 +50,16 @@ public abstract class State implements Screen {
 
     abstract void drawGame();
 
-    public final Vector3 getTapPosition() {
-        // Transforms screen coordinates to game world coordinates
-        tap.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        return camera.unproject(tap);
+    @Override
+    public void dispose() {
+        font.dispose();
+        batch.dispose();
+        music.dispose();
     }
 
-    public final LibGDXSamples getGame() {
-        return game;
+    @Override
+    public void show() {
+
     }
 
     @Override
@@ -86,12 +80,5 @@ public abstract class State implements Screen {
     @Override
     public void hide() {
 
-    }
-
-    @Override
-    public void dispose() {
-        font.dispose();
-        batch.dispose();
-        music.dispose();
     }
 }

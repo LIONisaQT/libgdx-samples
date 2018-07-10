@@ -5,35 +5,23 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.missionbit.LibGDXSamples;
-import com.missionbit.actors.Button;
-import com.missionbit.actors.CircleButton;
 import com.missionbit.actors.Player;
-import com.missionbit.actors.RectButton;
+import com.missionbit.utils.Controller;
 
 public class InGame extends State {
     private Player player;
-
-    private Array<Button> buttons;
-    private CircleButton jumpButton;
-    private RectButton leftButton, rightButton;
+    private Controller controller;
 
     private ParticleEffectPool effectPool;                  // Pool of inactive particle effects
     private Array<ParticleEffectPool.PooledEffect> effects; // Array of active particle effects
 
-    public InGame(LibGDXSamples game) {
+    InGame(LibGDXSamples game) {
         super(game);
         player = new Player(50, 100, this);
-
-        buttons = new Array<Button>();
-        jumpButton = new CircleButton(LibGDXSamples.WIDTH - 48, 48, "textures/buttons/jump-button.png");
-        buttons.add(jumpButton);
-        leftButton = new RectButton(16, 16, "textures/buttons/left-arrow.png");
-        buttons.add(leftButton);
-        rightButton = new RectButton(96, 16, "textures/buttons/left-arrow.png");
-        rightButton.flipSprite(true, false);
-        buttons.add(rightButton);
+        controller = new Controller();
 
         // Initialize effects array and an instance of the particle effect
         effects = new Array<ParticleEffectPool.PooledEffect>();
@@ -49,34 +37,13 @@ public class InGame extends State {
 
     @Override
     void update(float dt) {
-        if (Gdx.input.justTouched()) {
-            if (jumpButton.checkPressed(getTapPosition())) {
-                player.jump();
-            }
-
-            if (leftButton.checkPressed(getTapPosition())) {
-                // Do something
-            }
-
-            if (rightButton.checkPressed(getTapPosition())) {
-                // Do something
-            }
-        }
-        if (Gdx.input.isTouched()) {
-            // Grabs particle effect from pool (or creates a new one if one isn't free)
-            ParticleEffectPool.PooledEffect expl = effectPool.obtain();
-
-            // Sets position of the explosion and adds it to the active array for processing
-            expl.setPosition(getTapPosition().x, getTapPosition().y);
-            effects.add(expl);
-        }
+        handleInput();
 
         // Updates particle effects, and removes it from the active array when finished
         for (ParticleEffectPool.PooledEffect p : effects) {
             p.update(dt);
             if (p.isComplete()) {
                 p.free();
-
                 /*
                 Setting identity to true uses == comparison instead of .equals(). This is important
                 because .equals() compares value(s) whereas == compares memory addresses.
@@ -112,21 +79,50 @@ public class InGame extends State {
         player.update(dt);
     }
 
+    // Anything involving input and the controller goes here
+    private void handleInput() {
+        controller.update(camera);
+
+        if (controller.isLeftPressed()) {
+            player.moveLeft();
+        } else if (controller.isRightPressed()) {
+            player.moveRight();
+        } else {
+            player.resetAnim();
+        }
+
+        if (controller.isJumpPressed()) {
+            player.jump();
+        }
+
+        for (int i = 0; i < 5; i++) {
+            if (Gdx.input.isTouched(i)) {
+                // Grabs particle effect from pool (or creates a new one if one isn't free)
+                ParticleEffectPool.PooledEffect expl = effectPool.obtain();
+
+                // Sets position of the explosion and adds it to the active array for processing
+                Vector3 touchPos = new Vector3(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                camera.unproject(touchPos);
+                expl.setPosition(touchPos.x, touchPos.y);
+                effects.add(expl);
+            }
+        }
+
+    }
+
     @Override
     void drawGame() {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
         batch.draw(player.getTexture(), player.getBounds().getX(), player.getBounds().getY());
+        controller.draw(batch);
         for(ParticleEffectPool.PooledEffect p : effects) { p.draw(batch); }
-        for (Button b : buttons) {
-            b.draw(batch);
-        }
         batch.end();
 
         if (DEBUG) {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
-            jumpButton.drawDebug(sr);
+            controller.drawDebug(sr);
             sr.end();
         }
     }
