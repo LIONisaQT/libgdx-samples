@@ -8,11 +8,10 @@ import com.missionbit.LibGDXSamples;
 public abstract class State implements Screen {
     final LibGDXSamples game;
     public OrthographicCamera camera;
-    public static final float PIXEL_TO_METER = 1/32f;
 
     State(LibGDXSamples game) {
         this.game = game;
-        camera = new OrthographicCamera(LibGDXSamples.WIDTH * PIXEL_TO_METER, LibGDXSamples.HEIGHT * PIXEL_TO_METER);
+        camera = new OrthographicCamera(LibGDXSamples.WIDTH, LibGDXSamples.HEIGHT);
         camera.translate(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
     }

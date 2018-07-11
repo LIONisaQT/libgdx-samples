@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-up" width="15" height="25" tilewidth="32" tileheight="32" infinite="0" backgroundcolor="#c2f0ec" nextobjectid="34">
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-up" width="15" height="25" tilewidth="32" tileheight="32" infinite="0" backgroundcolor="#c2f0ec" nextobjectid="40">
  <tileset firstgid="1" name="Tiles" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../../../../Tiles_32x32.png" width="256" height="256"/>
+  <tile id="20">
+   <objectgroup draworder="index">
+    <object id="1" x="0" y="0">
+     <polygon points="0,0 32,32 0,32"/>
+    </object>
+   </objectgroup>
+  </tile>
  </tileset>
  <layer name="Main" width="15" height="25">
   <data encoding="csv">
@@ -33,14 +40,14 @@
 </data>
  </layer>
  <objectgroup name="Collision">
-  <object id="32" name="Ground" x="128" y="736">
-   <polygon points="0,0 96,0 96,32 0,32"/>
-  </object>
-  <object id="33" name="Ground" x="224" y="736">
-   <polygon points="0,0 64,-32 64,0"/>
-  </object>
-  <object id="31" name="Ground" x="0" y="704">
+  <object id="36" x="0" y="704">
    <polygon points="0,0 96,0 96,64 0,64"/>
+  </object>
+  <object id="37" x="128" y="736">
+   <polygon points="0,0 0,32 96,32 96,0"/>
+  </object>
+  <object id="38" x="224" y="736">
+   <polygon points="0,0 64,-32 64,0"/>
   </object>
  </objectgroup>
  <layer name="Foreground" width="15" height="25">
