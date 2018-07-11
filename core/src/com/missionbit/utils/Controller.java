@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.missionbit.LibGDXSamples;
@@ -17,35 +16,30 @@ import com.missionbit.LibGDXSamples;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-Note to self:
-To use InputListener, would need a way to reference the pointer that initiated the button to
-correctly implement touchUp.
- */
-
 public class Controller implements InputProcessor {
-    private OrthographicCamera camera; // We need this to unproject our tap coordinates
-    private Array<Image> buttons;
+    private OrthographicCamera camera;  // We need this to unproject our tap coordinates
+    private Array<Image> buttons;       // Used for convenience for drawing
 
-    // Different depending on what buttons you have
+    // Different hitboxes depending on what buttons you have
     private Rectangle leftHitbox, rightHitbox;
     private Circle jumpHitbox, attackHitbox;
 
-    private boolean leftPressed, rightPressed, jumpPressed, attackPressed;
+    private boolean leftPressed, rightPressed, jumpPressed, attackPressed; // Button presses
 
+    // Simple node that holds information about touch
     class TouchInfo {
-        public float touchX = 0;
-        public float touchY = 0;
-        public boolean touched = false;
+        float touchX = 0;
+        float touchY = 0;
     }
 
+    // Map where our fingers are the keys, updated by InputProcessor methods
     private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
 
     public Controller(OrthographicCamera camera) {
         this.camera = camera;
-
         buttons = new Array<Image>();
 
+        // Set all our buttons, positions, and bounds
         Image left = new Image(new Texture("textures/buttons/left-arrow.png"));
         left.setPosition(0, 0);
         leftHitbox = new Rectangle(left.getX(), left.getY(), left.getWidth(), left.getHeight());
@@ -66,33 +60,16 @@ public class Controller implements InputProcessor {
         attackHitbox = new Circle(attack.getX() + attack.getWidth() / 2, attack.getY() + attack.getHeight() / 2, attack.getWidth() / 2);
         buttons.add(attack);
 
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(this); // Let game know that controller can receive input
+
+        // Fills in map with empty key-value pairs
         for (int i = 0; i < 5; i++) {
             touches.put(i, new TouchInfo());
         }
     }
 
-    public void update() {
-//        for (int i = 0; i < 5; i++) {
-//            Vector3 touchPos = new Vector3(Gdx.input.getX(i), Gdx.input.getY(i), 0);
-//            camera.unproject(touchPos);
-//
-//            if (leftHitbox.contains(touchPos.x, touchPos.y)) {
-//                leftPressed = Gdx.input.isTouched(i);
-//                rightPressed = false;
-//            } else if (rightHitbox.contains(touchPos.x, touchPos.y)) {
-//                rightPressed = Gdx.input.isTouched(i);
-//                leftPressed = false;
-//            } else if (jumpHitbox.contains(touchPos.x, touchPos.y)) {
-//                jumpPressed = Gdx.input.isTouched(i);
-//            }
-//        }
-    }
-
     public void draw(SpriteBatch batch) {
-        for (Image i : buttons) {
-            i.draw(batch, 0.8f);
-        }
+        for (Image i : buttons) { i.draw(batch, 0.8f); }
     }
 
     public void drawDebug(ShapeRenderer sr) {
@@ -102,21 +79,11 @@ public class Controller implements InputProcessor {
         sr.circle(attackHitbox.x, attackHitbox.y, attackHitbox.radius);
     }
 
-    public boolean isLeftPressed() {
-        return leftPressed;
-    }
-
-    public boolean isRightPressed() {
-        return rightPressed;
-    }
-
-    public boolean isJumpPressed() {
-        return jumpPressed;
-    }
-
-    public boolean isAttackPressed() {
-        return attackPressed;
-    }
+    // Getter methods for the game to use
+    public boolean isLeftPressed() { return leftPressed; }
+    public boolean isRightPressed() { return rightPressed; }
+    public boolean isJumpPressed() { return jumpPressed; }
+    public boolean isAttackPressed() { return attackPressed; }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -133,59 +100,65 @@ public class Controller implements InputProcessor {
         return false;
     }
 
+    // Helper method to check collision between touches and buttons
+    private void checkCollisions(TouchInfo t) {
+        if (leftHitbox.contains(t.touchX, t.touchY)) {
+            leftPressed = true;
+            rightPressed = false;
+        } else if (rightHitbox.contains(t.touchX, t.touchY)) {
+            rightPressed = true;
+            leftPressed = false;
+        } else if (jumpHitbox.contains(t.touchX, t.touchY)) {
+            jumpPressed = true;
+        }
+    }
+
+
+    // Called once as soon as the controller detects a finger input
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 touchPos = new Vector3(screenX, screenY, 0);
         camera.unproject(touchPos);
+
         if (pointer < 5) {
             touches.get(pointer).touchX = touchPos.x;
             touches.get(pointer).touchY = touchPos.y;
-            touches.get(pointer).touched = true;
 
-            if (leftHitbox.contains(touchPos.x, touchPos.y)) {
-                leftPressed = touches.get(pointer).touched;
-                rightPressed = false;
-            } else if (rightHitbox.contains(touchPos.x, touchPos.y)) {
-                rightPressed = touches.get(pointer).touched;
-                leftPressed = false;
-            } else if (jumpHitbox.contains(touchPos.x, touchPos.y)) {
-                jumpPressed = touches.get(pointer).touched;
-            }
+            checkCollisions(touches.get(pointer));
         }
         return true;
     }
 
+    // Called once as soon as the controller detects a finger release
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        Vector3 touchPos = new Vector3(screenX, screenY, 0);
+        camera.unproject(touchPos);
+
         if (pointer < 5) {
             touches.get(pointer).touchX = 0;
             touches.get(pointer).touchY = 0;
-            touches.get(pointer).touched = false;
+
+            // Don't have to check for collisions because the button will be unpressed on touchUp()
+            leftPressed = false;
+            rightPressed = false;
+            jumpPressed = false;
         }
         return true;
     }
 
+
+    // Called if touchDown() has been called before and controller sees a finger moving around
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         Vector3 touchPos = new Vector3(screenX, screenY, 0);
         camera.unproject(touchPos);
+
         if (pointer < 5) {
             touches.get(pointer).touchX = touchPos.x;
             touches.get(pointer).touchY = touchPos.y;
 
-            if (leftHitbox.contains(touchPos.x, touchPos.y)) {
-                leftPressed = touches.get(pointer).touched;
-                rightPressed = false;
-            } else if (rightHitbox.contains(touchPos.x, touchPos.y)) {
-                rightPressed = touches.get(pointer).touched;
-                leftPressed = false;
-            } else if (jumpHitbox.contains(touchPos.x, touchPos.y)) {
-                jumpPressed = touches.get(pointer).touched;
-            } else {
-                leftPressed = false;
-                rightPressed = false;
-                jumpPressed = false;
-            }
+            checkCollisions(touches.get(pointer));
         }
         return true;
     }

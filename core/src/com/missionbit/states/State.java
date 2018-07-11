@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.missionbit.LibGDXSamples;
 
 public abstract class State implements Screen {
-
     final LibGDXSamples game;
     final boolean DEBUG = true;
     OrthographicCamera camera;

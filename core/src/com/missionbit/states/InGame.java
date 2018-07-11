@@ -44,35 +44,7 @@ public class InGame extends State {
             p.update(dt);
             if (p.isComplete()) {
                 p.free();
-                /*
-                Setting identity to true uses == comparison instead of .equals(). This is important
-                because .equals() compares value(s) whereas == compares memory addresses.
-
-                For example, if you create two identical Player objects, the compiler will optimize
-                the two objects to the same address in memory because they're both identical in all
-                aspects. However, as soon as you change a single variable, for example if the speed
-                was 15, and you even run speed = 15 somewhere else in code, that instance of the
-                class will be moved to a new location in memory, because something about it was
-                touched. Java's compiler is not smart enough to notice this kind of subtlety.
-
-                You can test this by creating two identical Strings, checking both == and .equals()
-                on it, changing the value of the one of the Strings, and then rechecking equality.
-                == will return false, and .equals() will return true.
-
-                With pools, an instance of an object will never change its address in memory. You
-                can test this by printing the pooled object, which will give you its memory address.
-                After freeing the pooled object, obtain it from the pool again, and you can see it
-                still retains its address in memory. This is the entire point of the pool, and why
-                all games with rapidly-spawning objects will implement some form of pooling.
-
-                Anyway, when we remove the value of the pooled object from the active array, we
-                absolutely want to make sure we're removing the correct object from the pool, so we
-                use the == operator.
-
-                You can learn more about what exactly is going on here by studying compilers, which
-                many colleges have at least one course on.
-                 */
-                effects.removeValue(p, true);
+                effects.removeValue(p, true); // Bother Ryan if you want to know why we use true in here
             }
         }
 
@@ -81,8 +53,6 @@ public class InGame extends State {
 
     // Anything involving input and the controller goes here
     private void handleInput() {
-        controller.update();
-
         if (controller.isLeftPressed()) {
             player.moveLeft();
         } else if (controller.isRightPressed()) {
