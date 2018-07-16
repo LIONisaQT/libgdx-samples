@@ -53,18 +53,16 @@ public class InGame extends State {
 
     // Anything involving input and the controller goes here
     private void handleInput() {
-        if (controller.isLeftPressed()) {
-            player.moveLeft();
-        } else if (controller.isRightPressed()) {
-            player.moveRight();
-        } else {
-            player.resetAnim();
-        }
+        // Movement
+        if (controller.isLeftPressed()) {player.moveLeft();}
+        else if (controller.isRightPressed()) {player.moveRight();}
+        else {player.resetAnim();}
 
-        if (controller.isJumpPressed()) {
-            player.jump();
-        }
+        // Jumping and attacking
+        if (controller.isJumpPressed()) {player.jump();}
+        if (controller.isAttackPressed()) {player.attack();}
 
+        // Spawn particle effects for the lulz
         for (int i = 0; i < 5; i++) {
             if (Gdx.input.isTouched(i)) {
                 // Grabs particle effect from pool (or creates a new one if one isn't free)
@@ -77,22 +75,22 @@ public class InGame extends State {
                 effects.add(expl);
             }
         }
-
     }
 
     @Override
     void drawGame() {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
-        batch.draw(player.getTexture(), player.getBounds().getX(), player.getBounds().getY());
+        batch.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
         controller.draw(batch);
-        for(ParticleEffectPool.PooledEffect p : effects) { p.draw(batch); }
+        for(ParticleEffectPool.PooledEffect p : effects) {p.draw(batch);}
         batch.end();
 
         if (DEBUG) {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
             controller.drawDebug(sr);
+            player.drawDebug(sr);
             sr.end();
         }
     }

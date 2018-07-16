@@ -110,6 +110,8 @@ public class Controller implements InputProcessor {
             leftPressed = false;
         } else if (jumpHitbox.contains(t.touchX, t.touchY)) {
             jumpPressed = true;
+        } else if (attackHitbox.contains(t.touchX, t.touchY)) {
+            attackPressed = true;
         }
     }
 
@@ -143,6 +145,7 @@ public class Controller implements InputProcessor {
             leftPressed = false;
             rightPressed = false;
             jumpPressed = false;
+            attackPressed = false;
         }
         return true;
     }
