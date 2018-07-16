@@ -78,10 +78,10 @@ public class InGame extends State {
     }
 
     @Override
-    void drawGame() {
+    void drawGame(float dt) {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
-        batch.draw(player.getTexture(), player.getPosition().x, player.getPosition().y);
+        batch.draw(player.getTexture(dt), player.getPosition().x, player.getPosition().y);
         controller.draw(batch);
         for(ParticleEffectPool.PooledEffect p : effects) {p.draw(batch);}
         batch.end();

@@ -42,12 +42,12 @@ public abstract class State implements Screen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         update(delta);
-        drawGame();
+        drawGame(delta);
     }
 
     abstract void update(float dt);
 
-    abstract void drawGame();
+    abstract void drawGame(float dt);
 
     @Override
     public void dispose() {

@@ -27,7 +27,7 @@ public class MainMenu extends State {
     }
 
     @Override
-    void drawGame() {
+    void drawGame(float dt) {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
         batch.end();
