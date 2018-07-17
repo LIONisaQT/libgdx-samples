@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.missionbit.LibGDXSamples;
 import com.missionbit.states.State;
@@ -21,11 +22,14 @@ public class Player {
     private int numJumps;
 
     private Texture runSheet, attackSheet, jumpSheet;
-    private enum AnimState { JUMPING, ATTACKING, RUNNING, IDLING};
+
+    private enum AnimState { JUMPING, ATTACKING, RUNNING, IDLING };
     private AnimState currentState, previousState;
     private Animation<TextureRegion> runAnim, atkAnim, jumpAnim, idleAnim;
     private float stateTime;
     private boolean faceRight, isAttacking;
+
+    private int hp, maxHp;
 
     public Player(int x, int y, State state) {
         this.state = state;
@@ -86,7 +90,7 @@ public class Player {
         // Player variables
         moveSpeed = 150;
         jumpHeight = 300;
-        numJumps = 1;
+        numJumps = 3;
         faceRight = true;
         isAttacking = false;
 
@@ -102,7 +106,7 @@ public class Player {
         );
 
         hitbox = new Rectangle(
-                position.x + offset.x,
+                position.x  + offset.x,
                 position.y + offset.y,
                 130,
                 150);
@@ -128,7 +132,11 @@ public class Player {
 
         // Update bounds according to position
         bounds.setPosition(position.x + offset.x, position.y + offset.y);
-        hitbox.setPosition(position.x + offset.x, position.y + offset.y);
+        if (faceRight) {
+            hitbox.setPosition(position.x + offset.x, position.y + offset.y);
+        } else {
+            hitbox.setPosition(position.x + offset.x - 74, position.y + offset.y);
+        }
 
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -181,6 +189,7 @@ public class Player {
 
     public TextureRegion getTexture(float dt) {
         TextureRegion region;
+
         switch(currentState) {
             case ATTACKING:
                 region = atkAnim.getKeyFrame(stateTime, false);
@@ -212,7 +221,13 @@ public class Player {
 
     public Vector2 getPosition() {return position;}
 
+    public void setVelocity(int x, int y) {velocity.set(x, y);}
+
+    public boolean isAttacking() { return isAttacking; }
+
     public Rectangle getBounds() {return bounds;}
+
+    public Rectangle getHitbox() { return hitbox; }
 
     public void dispose() {
         runSheet.dispose();

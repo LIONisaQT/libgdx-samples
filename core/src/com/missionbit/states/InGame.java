@@ -12,7 +12,7 @@ import com.missionbit.actors.Player;
 import com.missionbit.utils.Controller;
 
 public class InGame extends State {
-    private Player player;
+    private Player player, player2;
     private Controller controller;
 
     private ParticleEffectPool effectPool;                  // Pool of inactive particle effects
@@ -21,6 +21,7 @@ public class InGame extends State {
     InGame(LibGDXSamples game) {
         super(game);
         player = new Player(50, 100, this);
+        player2 = new Player(100, 200, this);
         controller = new Controller(camera);
 
         // Initialize effects array and an instance of the particle effect
@@ -48,7 +49,12 @@ public class InGame extends State {
             }
         }
 
+        if (player.getHitbox().overlaps(player2.getBounds()) && player.isAttacking()) {
+            player2.setVelocity(1000, 100);
+        }
+
         player.update(dt);
+        player2.update(dt);
     }
 
     // Anything involving input and the controller goes here
@@ -82,6 +88,7 @@ public class InGame extends State {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
         batch.draw(player.getTexture(dt), player.getPosition().x, player.getPosition().y);
+        batch.draw(player2.getTexture(dt), player2.getPosition().x, player2.getPosition().y);
         controller.draw(batch);
         for(ParticleEffectPool.PooledEffect p : effects) {p.draw(batch);}
         batch.end();
@@ -90,6 +97,7 @@ public class InGame extends State {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
             controller.drawDebug(sr);
+            player2.drawDebug(sr);
             player.drawDebug(sr);
             sr.end();
         }
@@ -98,6 +106,7 @@ public class InGame extends State {
     public void dispose() {
         super.dispose();
         player.dispose();
+        player2.dispose();
 
         // Reset all effects
         for (ParticleEffectPool.PooledEffect e : effects) {
