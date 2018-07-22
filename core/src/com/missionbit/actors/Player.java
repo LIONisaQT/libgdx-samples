@@ -23,13 +23,13 @@ public class Player {
 
     private Texture runSheet, attackSheet, jumpSheet;
 
-    private enum AnimState { JUMPING, ATTACKING, RUNNING, IDLING };
+    private enum AnimState {JUMPING, ATTACKING, RUNNING, IDLING}
     private AnimState currentState, previousState;
     private Animation<TextureRegion> runAnim, atkAnim, jumpAnim, idleAnim;
     private float stateTime;
     private boolean faceRight, isAttacking;
 
-    private int hp, maxHp;
+    private int hp, maxHp, atkPower;
 
     public Player(int x, int y, State state) {
         this.state = state;
@@ -93,6 +93,9 @@ public class Player {
         numJumps = 3;
         faceRight = true;
         isAttacking = false;
+        maxHp = 100;
+        hp = maxHp;
+        atkPower = 10;
 
         position = new Vector2(x, y);
         offset = new Vector2(100, 70);
@@ -102,8 +105,7 @@ public class Player {
                 position.x + offset.x,
                 position.y + offset.y,
                 56,
-                120
-        );
+                120);
 
         hitbox = new Rectangle(
                 position.x  + offset.x,
@@ -114,9 +116,7 @@ public class Player {
 
     public void update(float dt) {
         // Add gravity as long as we're not touching the bottom of the screen
-        if (position.y > -offset.y) {
-            velocity.add(0, GRAVITY);
-        }
+        if (position.y > -offset.y) { velocity.add(0, GRAVITY); }
 
         velocity.scl(dt); // Scale velocity to frame rate
         position.add(velocity); // Add scaled velocity to position
@@ -125,7 +125,7 @@ public class Player {
         // Ensure player never leaves bottom and side bounds
         if (position.y + offset.y < 0) {
             position.y = -offset.y;
-            if (numJumps == 0) {numJumps++;}
+            if (numJumps == 0) { numJumps++; }
         }
         if (position.x + offset.x < 0) {position.x = -offset.x;}
         if (position.x + offset.x + bounds.width > LibGDXSamples.WIDTH) {position.x = LibGDXSamples.WIDTH - bounds.getWidth() - offset.x;}
@@ -163,9 +163,7 @@ public class Player {
     }
 
     public void attack() {
-        if (!isAttacking) {
-            isAttacking = true;
-        }
+        if (!isAttacking) { isAttacking = true; }
     }
 
     public void moveLeft() {
@@ -178,9 +176,7 @@ public class Player {
         velocity.x = moveSpeed;
     }
 
-    public void resetAnim() {
-        velocity.set(0, velocity.y);
-    }
+    public void resetAnim() { velocity.set(0, velocity.y); }
 
     public void drawDebug(ShapeRenderer sr) {
         sr.rect(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -219,13 +215,21 @@ public class Player {
         return region;
     }
 
-    public Vector2 getPosition() {return position;}
+    public Vector2 getPosition() { return position; }
 
-    public void setVelocity(int x, int y) {velocity.set(x, y);}
+    public void setVelocity(int x, int y) { velocity.set(x, y); }
 
     public boolean isAttacking() { return isAttacking; }
 
-    public Rectangle getBounds() {return bounds;}
+    public int getHp() { return hp; }
+
+    public void setHp(int h) { hp = h; }
+
+    public void reduceHp(int h) { hp -= h; }
+
+    public int getAtkPower() { return atkPower; }
+
+    public Rectangle getBounds() { return bounds; }
 
     public Rectangle getHitbox() { return hitbox; }
 

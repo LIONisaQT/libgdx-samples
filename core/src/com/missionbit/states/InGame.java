@@ -11,8 +11,11 @@ import com.missionbit.LibGDXSamples;
 import com.missionbit.actors.Player;
 import com.missionbit.utils.Controller;
 
+import java.util.Random;
+
 public class InGame extends State {
-    private Player player, player2;
+    private Player player;
+    private Array<Player> enemies;
     private Controller controller;
 
     private ParticleEffectPool effectPool;                  // Pool of inactive particle effects
@@ -21,7 +24,11 @@ public class InGame extends State {
     InGame(LibGDXSamples game) {
         super(game);
         player = new Player(50, 100, this);
-        player2 = new Player(100, 200, this);
+        enemies = new Array<Player>();
+        Random random = new Random();
+        for (int i = 0; i < 1; i++) {
+            enemies.add(new Player(random.nextInt(LibGDXSamples.WIDTH), random.nextInt(LibGDXSamples.HEIGHT), this));
+        }
         controller = new Controller(camera);
 
         // Initialize effects array and an instance of the particle effect
@@ -49,12 +56,18 @@ public class InGame extends State {
             }
         }
 
-        if (player.getHitbox().overlaps(player2.getBounds()) && player.isAttacking()) {
-            player2.setVelocity(1000, 100);
-        }
-
         player.update(dt);
-        player2.update(dt);
+
+        for (Player p : enemies) {
+            p.update(dt);
+            if (player.getHitbox().overlaps(p.getBounds()) && player.isAttacking()) {
+                p.reduceHp(player.getAtkPower());
+                System.out.println(p.getHp());
+                if (p.getHp() == 0) {
+                    enemies.removeValue(p, true);
+                }
+            }
+        }
     }
 
     // Anything involving input and the controller goes here
@@ -88,7 +101,9 @@ public class InGame extends State {
         batch.begin();
         font.draw(batch, this.getClass().toString(), 0, LibGDXSamples.HEIGHT);
         batch.draw(player.getTexture(dt), player.getPosition().x, player.getPosition().y);
-        batch.draw(player2.getTexture(dt), player2.getPosition().x, player2.getPosition().y);
+        for (Player p : enemies) {
+            batch.draw(p.getTexture(dt), p.getPosition().x, p.getPosition().y);
+        }
         controller.draw(batch);
         for(ParticleEffectPool.PooledEffect p : effects) {p.draw(batch);}
         batch.end();
@@ -97,8 +112,10 @@ public class InGame extends State {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
             controller.drawDebug(sr);
-            player2.drawDebug(sr);
             player.drawDebug(sr);
+            for (Player p : enemies) {
+                p.drawDebug(sr);
+            }
             sr.end();
         }
     }
@@ -106,7 +123,6 @@ public class InGame extends State {
     public void dispose() {
         super.dispose();
         player.dispose();
-        player2.dispose();
 
         // Reset all effects
         for (ParticleEffectPool.PooledEffect e : effects) {
