@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.missionbit.LibGDXSamples;
@@ -127,8 +128,8 @@ public class Player {
             position.y = -offset.y;
             if (numJumps == 0) { numJumps++; }
         }
-        if (position.x + offset.x < 0) {position.x = -offset.x;}
-        if (position.x + offset.x + bounds.width > LibGDXSamples.WIDTH) {position.x = LibGDXSamples.WIDTH - bounds.getWidth() - offset.x;}
+//        if (position.x + offset.x < 0) {position.x = -offset.x;}
+//        if (position.x + offset.x + bounds.width > LibGDXSamples.WIDTH) {position.x = LibGDXSamples.WIDTH - bounds.getWidth() - offset.x;}
 
         // Update bounds according to position
         bounds.setPosition(position.x + offset.x, position.y + offset.y);

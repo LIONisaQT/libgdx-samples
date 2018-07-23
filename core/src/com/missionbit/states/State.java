@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.missionbit.LibGDXSamples;
 
 public abstract class State implements Screen {
     final LibGDXSamples game;
     final boolean DEBUG = true;
-    OrthographicCamera camera;
+    public OrthographicCamera camera;
+    public Viewport viewport;
 
     BitmapFont font;
     SpriteBatch batch;
@@ -25,6 +28,8 @@ public abstract class State implements Screen {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, LibGDXSamples.WIDTH, LibGDXSamples.HEIGHT);
+
+        viewport = new FitViewport(LibGDXSamples.WIDTH, LibGDXSamples.HEIGHT, camera);
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);

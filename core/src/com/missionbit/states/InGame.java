@@ -29,7 +29,8 @@ public class InGame extends State {
         for (int i = 0; i < 1; i++) {
             enemies.add(new Player(random.nextInt(LibGDXSamples.WIDTH), random.nextInt(LibGDXSamples.HEIGHT), this));
         }
-        controller = new Controller(camera);
+        camera.position.set(viewport.getScreenWidth() / 2, viewport.getScreenHeight() / 2, 0);
+        controller = new Controller(camera, batch);
 
         // Initialize effects array and an instance of the particle effect
         effects = new Array<ParticleEffectPool.PooledEffect>();
@@ -68,6 +69,9 @@ public class InGame extends State {
                 }
             }
         }
+
+        camera.position.set(player.getPosition(), 0);
+        camera.update();
     }
 
     // Anything involving input and the controller goes here
@@ -104,14 +108,17 @@ public class InGame extends State {
         for (Player p : enemies) {
             batch.draw(p.getTexture(dt), p.getPosition().x, p.getPosition().y);
         }
-        controller.draw(batch);
+//        controller.draw(batch);
         for(ParticleEffectPool.PooledEffect p : effects) {p.draw(batch);}
         batch.end();
+
+        batch.setProjectionMatrix(controller.stage.getCamera().combined);
+        controller.stage.draw();
 
         if (DEBUG) {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
-            controller.drawDebug(sr);
+//            controller.drawDebug(sr);
             player.drawDebug(sr);
             for (Player p : enemies) {
                 p.drawDebug(sr);

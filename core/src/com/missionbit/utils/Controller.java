@@ -9,14 +9,19 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.missionbit.LibGDXSamples;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Controller implements InputProcessor {
+    public Stage stage;
+    private Viewport viewport;
     private OrthographicCamera camera;  // We need this to unproject our tap coordinates
     private Array<Image> buttons;       // Used for convenience for drawing
 
@@ -35,29 +40,35 @@ public class Controller implements InputProcessor {
     // Map where our fingers are the keys, updated by InputProcessor methods
     private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
 
-    public Controller(OrthographicCamera camera) {
-        this.camera = camera;
+    public Controller(OrthographicCamera camera, SpriteBatch batch) {
+        this.camera = new OrthographicCamera();
+        viewport = new FitViewport(LibGDXSamples.WIDTH, LibGDXSamples.HEIGHT, this.camera);
+        stage = new Stage(viewport, batch);
         buttons = new Array<Image>();
 
         // Set all our buttons, positions, and bounds
         Image left = new Image(new Texture("textures/buttons/left-arrow.png"));
         left.setPosition(0, 0);
         leftHitbox = new Rectangle(left.getX(), left.getY(), left.getWidth(), left.getHeight());
+        stage.addActor(left);
         buttons.add(left);
 
         Image right = new Image(new Texture("textures/buttons/right-arrow.png"));
         right.setPosition(left.getWidth() + 4, 0);
         rightHitbox = new Rectangle(right.getX(), right.getY(), right.getWidth(), right.getHeight());
+        stage.addActor(right);
         buttons.add(right);
 
         Image jump = new Image(new Texture("textures/buttons/jump-button.png"));
         jump.setPosition(LibGDXSamples.WIDTH - jump.getWidth(), 0);
         jumpHitbox = new Circle(jump.getX() + jump.getWidth() / 2, jump.getY() + jump.getHeight() / 2, jump.getWidth() / 2);
+        stage.addActor(jump);
         buttons.add(jump);
 
         Image attack = new Image(new Texture("textures/buttons/attack-button.png"));
         attack.setPosition(LibGDXSamples.WIDTH - attack.getWidth(), jump.getHeight() + 4);
         attackHitbox = new Circle(attack.getX() + attack.getWidth() / 2, attack.getY() + attack.getHeight() / 2, attack.getWidth() / 2);
+        stage.addActor(attack);
         buttons.add(attack);
 
         Gdx.input.setInputProcessor(this); // Let game know that controller can receive input
